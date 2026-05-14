@@ -1,0 +1,36 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+    paths:
+      - "app/**"
+      - "tests/**"
+      - "alembic/**"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - "app/**"
+      - "tests/**"
+      - "alembic/**"
+      - "pyproject.toml"
+
+jobs:
+  test:
+    name: pytest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]" aiosqlite
+
+      - name: Run tests
+        run: pytest --tb=short -q
