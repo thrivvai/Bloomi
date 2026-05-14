@@ -1,8 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -17,7 +16,7 @@ class CatalogItem(Base, UUIDPrimaryKeyMixin):
     rarity: Mapped[str] = mapped_column(String(32), nullable=False, default="common")
     price_currency: Mapped[str] = mapped_column(String(16), nullable=False, default="coins")
     price_amount: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    unlock_rules: Mapped[dict | None] = mapped_column(JSONB)
+    unlock_rules: Mapped[dict | None] = mapped_column(JSON)
     companion_kind_scope: Mapped[str] = mapped_column(
         String(16), nullable=False, default="all"
     )  # all | pet_only | plant_only
@@ -32,10 +31,10 @@ class UserInventory(Base, UUIDPrimaryKeyMixin):
     __tablename__ = "user_inventory"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     catalog_item_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         ForeignKey("catalog_items.id", ondelete="CASCADE"),
         nullable=False,
     )

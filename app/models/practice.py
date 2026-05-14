@@ -1,8 +1,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import JSON, Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, func
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import JSON, Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -12,7 +11,7 @@ class DailyCheckin(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __tablename__ = "daily_checkins"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     checkin_date: Mapped[date] = mapped_column(Date, nullable=False)
     checkin_type: Mapped[str] = mapped_column(String(32), nullable=False)  # morning | day | evening
@@ -22,14 +21,14 @@ class DailyCheckin(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     intention_text: Mapped[str | None] = mapped_column(Text)
     gratitude_text: Mapped[str | None] = mapped_column(Text)
     stress_score: Mapped[int | None] = mapped_column(Integer)
-    payload: Mapped[dict | None] = mapped_column(JSONB)
+    payload: Mapped[dict | None] = mapped_column(JSON)
 
 
 class Goal(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __tablename__ = "goals"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     goal_type: Mapped[str] = mapped_column(String(32), nullable=False)  # habit | one_off
     title: Mapped[str] = mapped_column(String(256), nullable=False)
@@ -52,23 +51,23 @@ class GoalCompletion(Base, UUIDPrimaryKeyMixin):
     __tablename__ = "goal_completions"
 
     goal_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("goals.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("goals.id", ondelete="CASCADE"), nullable=False, index=True
     )
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     completed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     proof_type: Mapped[str | None] = mapped_column(String(32))
     proof_asset_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("proof_assets.id", ondelete="SET NULL")
+        Uuid(as_uuid=True), ForeignKey("proof_assets.id", ondelete="SET NULL")
     )
     mood_before: Mapped[int | None] = mapped_column(Integer)
     mood_after: Mapped[int | None] = mapped_column(Integer)
     energy_awarded: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     coins_awarded: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    metadata_: Mapped[dict | None] = mapped_column("metadata", JSONB)
+    metadata_: Mapped[dict | None] = mapped_column("metadata", JSON)
 
     goal: Mapped["Goal"] = relationship("Goal", back_populates="completions")
     proof_asset: Mapped["ProofAsset | None"] = relationship("ProofAsset")
@@ -78,7 +77,7 @@ class ProofAsset(Base, UUIDPrimaryKeyMixin):
     __tablename__ = "proof_assets"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     asset_type: Mapped[str] = mapped_column(String(32), nullable=False)  # photo | text
     storage_path: Mapped[str] = mapped_column(String(512), nullable=False)
@@ -89,14 +88,14 @@ class ProofAsset(Base, UUIDPrimaryKeyMixin):
     verification_state: Mapped[str] = mapped_column(
         String(32), nullable=False, default="pending"
     )  # pending | verified | rejected
-    metadata_: Mapped[dict | None] = mapped_column("metadata", JSONB)
+    metadata_: Mapped[dict | None] = mapped_column("metadata", JSON)
 
 
 class JournalEntry(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __tablename__ = "journal_entries"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     prompt_id: Mapped[str | None] = mapped_column(String(128))
     entry_type: Mapped[str] = mapped_column(String(32), nullable=False, default="free")
@@ -109,9 +108,9 @@ class MoodEntry(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __tablename__ = "mood_entries"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     source: Mapped[str] = mapped_column(String(32), nullable=False)  # checkin | standalone | goal
     mood_score: Mapped[int] = mapped_column(Integer, nullable=False)
     mood_label: Mapped[str | None] = mapped_column(String(64))
-    context: Mapped[dict | None] = mapped_column(JSONB)
+    context: Mapped[dict | None] = mapped_column(JSON)
