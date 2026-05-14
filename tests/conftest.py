@@ -1,13 +1,10 @@
 import uuid
 from collections.abc import AsyncGenerator
 
-import pytest
 import pytest_asyncio
-from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.database import get_session_factory
 from app.dependencies import get_db, get_current_user_id
 from app.main import create_app
 from app.models.base import Base
@@ -16,9 +13,15 @@ TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 TEST_USER_ID = str(uuid.uuid4())
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture
 async def engine():
-    eng = create_async_engine(TEST_DATABASE_URL, echo=False)
+    """Fresh in-memory SQLite DB per test — avoids session-scope event loop mismatch
+    and gives each test clean isolation regardless of whether services commit."""
+    eng = create_async_engine(
+        TEST_DATABASE_URL,
+        echo=False,
+        connect_args={"check_same_thread": False},
+    )
     async with eng.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield eng
@@ -30,7 +33,6 @@ async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     factory = async_sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
     async with factory() as session:
         yield session
-        await session.rollback()
 
 
 @pytest_asyncio.fixture

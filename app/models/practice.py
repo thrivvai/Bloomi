@@ -1,8 +1,8 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, func
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
+from sqlalchemy import JSON, Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -102,7 +102,7 @@ class JournalEntry(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     entry_type: Mapped[str] = mapped_column(String(32), nullable=False, default="free")
     body_text: Mapped[str] = mapped_column(Text, nullable=False)
     sentiment_score: Mapped[float | None] = mapped_column(Float)
-    tags: Mapped[list[str] | None] = mapped_column(ARRAY(String))
+    tags: Mapped[list[str] | None] = mapped_column(JSON)  # ARRAY(String) on PG via migration
 
 
 class MoodEntry(Base, UUIDPrimaryKeyMixin, TimestampMixin):
