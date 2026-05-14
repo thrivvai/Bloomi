@@ -54,8 +54,12 @@
     },
     "extra": {
       "eas": {
-        "projectId": "bloomi-project-id"
+        "projectId": "0b3cc8d7-a244-4cd6-b9e0-157cd3090572"
+      },
+      "router": {
+        "origin": false
       }
-    }
+    },
+    "owner": "thrivvlive"
   }
 }
