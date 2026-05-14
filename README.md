@@ -52,7 +52,7 @@ GET  /healthz
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e ".[dev,postgres]"   # postgres extra adds psycopg[binary]
 
 # copy and edit env
 cp .env.example .env

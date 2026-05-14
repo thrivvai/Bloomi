@@ -49,6 +49,8 @@ async def test_create_and_list_goals(client: AsyncClient, db_session: AsyncSessi
 async def test_complete_goal_awards_rewards(client: AsyncClient, db_session: AsyncSession) -> None:
     from tests.conftest import TEST_USER_ID
 
+    await _seed_user_with_companion(db_session, TEST_USER_ID)
+
     create_resp = await client.post(
         "/v1/goals",
         json={"title": "Read 10 pages", "goal_type": "habit", "difficulty_tier": "easy"},
