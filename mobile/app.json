@@ -49,6 +49,7 @@
         }
       ],
       "expo-asset",
+      "./plugins/with-fix-expo-package-import",
       [
         "expo-build-properties",
         {
