@@ -1,2 +1,4 @@
+packages:
+  - "."
 allowBuilds:
   dtrace-provider: set this to true or false
